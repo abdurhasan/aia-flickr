@@ -11,23 +11,7 @@ import GridListTileBar from '@material-ui/core/GridListTileBar';
 import GridSkeletonLoading from './GridSkeletonLoading'
 import InfiniteScroll from 'react-infinite-scroller';
 
-const tileData = [
-  {
-    img: 'https://live.staticflickr.com/65535/50384942723_f4886a59fa_b.jpg',
-    title: 'mantapp',
-    author: 'author',
-  },
-  {
-    img: 'https://live.staticflickr.com/65535/50384942723_f4886a59fa_b.jpg',
-    title: 'mantapp',
-    author: 'author',
-  },
-  {
-    // img: 'https://live.staticflickr.com/65535/50384942723_f4886a59fa_b.jpg',
-    title: '',
-    author: '',
-  }
-]
+
 
 class App extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -35,10 +19,45 @@ class App extends Component<IProps, IState> {
 
     this.state = {
       searchPlaceHolder: '#Tags .. ',
-      searchTags: ''
+      searchTags: '',
+      isPagination: true,
+      data: [{
+        id: '1',
+        img: 'https://live.staticflickr.com/65535/50384942723_f4886a59fa_b.jpg',
+        title: 'mantapp',
+        author: 'author',
+      },
+      {
+        id: '2',
+        img: 'https://live.staticflickr.com/65535/50384942723_f4886a59fa_b.jpg',
+        title: 'mantapp',
+        author: 'author',
+      }
+      ]
+
     }
 
   }
+
+  generateRandomData = () => {
+    let result = [];
+    for (let i = 0; i < 5; i++) {
+      result.push({
+        id: Math.floor(Math.random() * 1000) + '',
+        img: 'https://live.staticflickr.com/65535/50384942723_f4886a59fa_b.jpg',
+        title: 'title',
+        author: 'hasan',
+      });
+    }
+    return result;
+  };
+
+  fetchMoreData = () => setTimeout(() => {
+    this.setState({
+      data: [...this.state.data, ...this.generateRandomData()]
+    })
+
+  }, 500)
 
 
   updatePlaceHolder(e: any) {
@@ -48,6 +67,7 @@ class App extends Component<IProps, IState> {
 
   render(): ReactNode {
     const { classes } = this.props;
+    const { data, isPagination } = this.state;
     return (
 
       <AppBar position="static" color="default">
@@ -68,24 +88,30 @@ class App extends Component<IProps, IState> {
           </div>
         </Toolbar>
 
-        <div className={classes.root}>
 
-          <GridSkeletonLoading className={classes.gridList} />
 
+        <InfiniteScroll
+          className={classes.root}
+          initialLoad={false}
+          loadMore={this.fetchMoreData}
+          hasMore={isPagination}
+          loader={(
+            <GridSkeletonLoading className={classes.gridList} />
+          )}
+        >
           <GridList cellHeight={400} className={classes.gridList}>
-
-            {tileData.map((tile) => (
-              <GridListTile key={tile.img}>
-                <img src={tile.img} alt={tile.title} /> */}
-              <GridListTileBar
-                  title={tile.title}
-                  subtitle={<span>by: </span>}
+            {data.map((snap) => (
+              <GridListTile key={snap.id}>
+                <img src={snap.img} alt={snap.title} /> */}
+                  <GridListTileBar
+                  title={snap.title}
+                  subtitle={<span>by: ${snap.author} </span>}
                 />
               </GridListTile>
             ))}
           </GridList>
+        </InfiniteScroll>
 
-        </div>
       </AppBar>
     );
   }

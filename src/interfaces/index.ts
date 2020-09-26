@@ -1,9 +1,17 @@
 import { createStyles, WithStyles, Theme, fade } from "@material-ui/core/styles";
 
+interface IData {
+    id: string,
+    img: string,
+    title: string,
+    author: string,
+}
 
 export interface IState {
     searchPlaceHolder: string;
-    searchTags: string
+    searchTags: string;
+    data: IData[];
+    isPagination: boolean
 }
 
 export interface IProps extends WithStyles<typeof styles> { }
