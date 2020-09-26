@@ -46,8 +46,8 @@ export const styles = (theme: Theme) => createStyles({
         overflow: 'hidden',
     },
     gridList: {
-        width: '50%',
-        height: '50%',
+        width: '55%',
+        height: '55%',
     },
     icon: {
         color: 'rgba(255, 255, 255, 0.54)',
