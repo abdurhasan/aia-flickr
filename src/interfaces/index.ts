@@ -11,7 +11,10 @@ export interface IState {
     searchPlaceHolder: string;
     searchTags: string;
     data: IData[];
-    isPagination: boolean
+    isPagination: boolean;
+    // deviceSize ?: string;
+    deviceCols: number;
+
 }
 
 export interface IProps extends WithStyles<typeof styles> { }
@@ -54,7 +57,8 @@ export const styles = (theme: Theme) => createStyles({
         overflow: 'hidden',
     },
     gridList: {
-        width: '55%',
+        // backgroundColor: 'red',
+        width: '150%',
         height: '55%',
     },
     icon: {

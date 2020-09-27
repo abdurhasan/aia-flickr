@@ -21,27 +21,43 @@ class App extends Component<IProps, IState> {
       searchPlaceHolder: '#Tags .. ',
       searchTags: '',
       isPagination: true,
-      data: [{
-        id: '1',
-        img: 'https://live.staticflickr.com/65535/50384942723_f4886a59fa_b.jpg',
-        title: 'mantapp',
-        author: 'author',
-      },
-      {
-        id: '2',
-        img: 'https://live.staticflickr.com/65535/50384942723_f4886a59fa_b.jpg',
-        title: 'mantapp',
-        author: 'author',
-      }
-      ]
-
+      deviceCols: 6,
+      data: []
     }
+    this.windowHandleResize = this.windowHandleResize.bind(this)
+    window.addEventListener('resize', this.windowHandleResize)
 
   }
 
+
+
+  windowHandleResize = () => {
+    console.log('windowHandleResize is running ...')
+
+    const windowWith: number = Number(window.innerWidth) | 0;
+    let deviceCols: number;
+    switch (true) {
+      case windowWith >= 1200:
+        deviceCols = 6
+        break;
+      case windowWith >= 992 && windowWith <= 1200:
+        deviceCols = 4
+        break;
+      default: {
+        deviceCols = 1
+        break;
+      }
+    }
+    this.setState({
+      deviceCols: deviceCols
+    })
+    console.log(this.state.deviceCols)
+  }
+
   generateRandomData = () => {
+    console.log('generateRandomData',this.state.deviceCols)
     let result = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < this.state.deviceCols; i++) {
       result.push({
         id: Math.floor(Math.random() * 1000) + '',
         img: 'https://live.staticflickr.com/65535/50384942723_f4886a59fa_b.jpg',
@@ -52,12 +68,11 @@ class App extends Component<IProps, IState> {
     return result;
   };
 
-  fetchMoreData = () => setTimeout(() => {
+  fetchMoreData = () => {
     this.setState({
       data: [...this.state.data, ...this.generateRandomData()]
     })
-
-  }, 500)
+  }
 
 
   updatePlaceHolder(e: any) {
@@ -67,7 +82,7 @@ class App extends Component<IProps, IState> {
 
   render(): ReactNode {
     const { classes } = this.props;
-    const { data, isPagination } = this.state;
+    const { data, isPagination, deviceCols } = this.state;
     return (
 
       <AppBar position="static" color="default">
@@ -82,36 +97,35 @@ class App extends Component<IProps, IState> {
                 root: classes.inputRoot,
                 input: classes.inputInput,
               }}
-              key=''
+              // key=''
               onChange={(e) => this.setState({ searchTags: e.target.value })}
             />
           </div>
         </Toolbar>
 
 
-
-        <InfiniteScroll
-          className={classes.root}
-          initialLoad={false}
-          loadMore={this.fetchMoreData}
-          hasMore={isPagination}
-          loader={(
-            <GridSkeletonLoading className={classes.gridList} />
-          )}
-        >
-          <GridList cellHeight={400} className={classes.gridList}>
-            {data.map((snap) => (
-              <GridListTile key={snap.id}>
-                <img src={snap.img} alt={snap.title} /> */}
+        <div className={classes.root}>
+          <InfiniteScroll
+            initialLoad={false}
+            loadMore={this.fetchMoreData}
+            hasMore={isPagination}
+            loader={(
+              <GridSkeletonLoading className={classes.gridList} cols={deviceCols} />
+            )}
+          >
+            <GridList cellHeight={400} className={classes.gridList} cols={deviceCols}>
+              {data.map((snap) => (
+                <GridListTile key={snap.id}>
+                  <img src={snap.img} alt={snap.title} /> */}
                   <GridListTileBar
-                  title={snap.title}
-                  subtitle={<span>by: ${snap.author} </span>}
-                />
-              </GridListTile>
-            ))}
-          </GridList>
-        </InfiniteScroll>
-
+                    title={snap.title}
+                    subtitle={<span>by: ${snap.author} </span>}
+                  />
+                </GridListTile>
+              ))}
+            </GridList>
+          </InfiniteScroll>
+        </div>
       </AppBar>
     );
   }
