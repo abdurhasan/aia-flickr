@@ -8,12 +8,16 @@ export class AppController {
         this.appService = new AppService()
     }
 
+    @Get('getFeed')
+    async getFeed(req: Request, res: Response) {
+        const pageNumber: number = Number(req?.query?.page) || 0;
+        const pageKey: string = 'page-' + pageNumber;
+        const getFeedData = await this.appService.getFlickerFeed(pageKey);
+        res.send(getFeedData);
+
+    }
     @Get('/')
-    async index(request: Request, response: Response) {
-        const dor = await this.appService.getFlickerFeed()
-        console.log(dor)
-        response.json(
-            { dor: true }
-        )
+    index(req: Request, res: Response) {
+        res.json({ version: '1.0.0' })
     }
 }
