@@ -41,8 +41,10 @@ export class AppService {
     processFeedApi(dataStr: string): IFeedData[] {
         const parsedData = parseJson(XMLToJson(dataStr))?.feed?.entry || [];
         const defaultImage: string = 'https://coolbackgrounds.io/images/backgrounds/white/white-radial-gradient-a5802da1.jpg';
+
         const feedParsed: IFeedData[] = parsedData.map(snap => {
-            const image: string = (snap?.link.filter(filt => filt.rel === 'rel'))?.href || defaultImage;
+            const image: string = (snap?.link.filter(snapFil => snapFil['rel'] === 'enclosure'))[0]?.href || defaultImage
+
             return {
                 id: snap?.id || `${Date.now()}`,
                 author: snap?.author?.name || '',
