@@ -1,8 +1,5 @@
 
-function createPagination(req: Request) {
-
-}
-
+export const MS_TENMINUTE = 1000 * 10;
 export function parseJson(str) {
     try {
         JSON.parse(str);

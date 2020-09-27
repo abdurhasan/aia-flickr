@@ -1,12 +1,21 @@
-import { Environtment, HttpClient, parseJson } from '../helpers';
+import { Environtment as Env, HttpClient, parseJson, MS_TENMINUTE } from '../helpers';
 import { toJson as XMLToJson } from 'xml2json';
 import { IFeedData } from '../interfaces'
+
 export class AppService {
     public feedData: object;
     private flickerBaseUrl: string;
     constructor() {
-        this.flickerBaseUrl = Environtment.get('FLICKER_BASE_URL');
+        this.flickerBaseUrl = Env.get('FLICKER_BASE_URL');
         this.feedData = {};
+
+        if (Env.getBoolean('RESET_CACHED')) {  // restore cache every 10 minutes
+
+            setInterval(function () {
+                this.feedData = {};
+            }, MS_TENMINUTE)
+        }
+
     }
 
     async getFlickerFeed(pageKey: string) {
@@ -41,8 +50,12 @@ export class AppService {
                 image
             }
         })
+        return feedParsed;
+    }
 
-        return feedParsed
-
+    async searchTag(tags: string) {
+        const tagUrl: string = this.flickerBaseUrl + '?tags=' + tags;
+        const getApi = (await HttpClient.get(tagUrl))?.data;
+        return this.processFeedApi(getApi)
     }
 }
