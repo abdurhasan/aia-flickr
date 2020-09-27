@@ -10,7 +10,7 @@ const GridSkeletonLoading = ({ className, cols }: { className: any, cols: number
             {loopSkeleton.map((snap) => (
                 <GridListTile key={'skeleton-' + snap}>
                     <Skeleton width='99%' height='79%' duration={0.5} />
-                    <Skeleton width="100%" height="19%" style={{ background: 'rgba(0, 0, 0, 0.5)' }} />
+                    <Skeleton width="100%" height="19%" style={{ background: 'rgba(0, 0, 0, 0.6)' }} duration={0.6}/>
                 </GridListTile>
             ))}
 

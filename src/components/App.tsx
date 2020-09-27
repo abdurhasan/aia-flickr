@@ -4,12 +4,12 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
-import { styles, IState, IProps } from '../interfaces'
+import { styles, IState, IProps, baseUrl, IData } from '../interfaces'
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import GridSkeletonLoading from './GridSkeletonLoading'
-import InfiniteScroll from 'react-infinite-scroller';
+import Axios from 'axios';
 
 
 
@@ -19,17 +19,40 @@ class App extends Component<IProps, IState> {
 
     this.state = {
       searchPlaceHolder: '#Tags .. ',
-      searchTags: '',
       isPagination: true,
       deviceCols: 6,
-      data: []
+      data: [],
+      page: 0,
+      isLoading: true
     }
-    this.windowHandleResize = this.windowHandleResize.bind(this)
-    window.addEventListener('resize', this.windowHandleResize)
+
+
 
   }
 
+  componentDidMount() {
 
+    // const self = this
+    // setInterval(function () {
+    //   console.log(self.state.data)
+    // }, 1000)
+
+    window.addEventListener('resize', this.windowHandleResize)
+    window.addEventListener('scroll', this.windowHandleScroll)
+
+    this.getFeed()
+  }
+
+  async getFeed() {
+    this.setState({ isLoading: true })
+    const fetchGetFeed: IData[] = (await Axios.get(baseUrl + `getFeed?=${this.state.page}`))?.data
+    const setNewData = [...this.state.data, ...fetchGetFeed]
+
+    this.setState({
+      isLoading: false,
+      data: setNewData.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i)
+    })
+  }
 
   windowHandleResize = () => {
     console.log('windowHandleResize is running ...')
@@ -54,38 +77,34 @@ class App extends Component<IProps, IState> {
     console.log(this.state.deviceCols)
   }
 
-  generateRandomData = () => {
-    console.log('generateRandomData',this.state.deviceCols)
-    let result = [];
-    for (let i = 0; i < this.state.deviceCols; i++) {
-      result.push({
-        id: Math.floor(Math.random() * 1000) + '',
-        img: 'https://live.staticflickr.com/65535/50384942723_f4886a59fa_b.jpg',
-        title: 'title',
-        author: 'hasan',
-      });
+  windowHandleScroll = () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop
+      === document.documentElement.offsetHeight
+    ) {
+      this.getFeed()
     }
-    return result;
-  };
+  }
 
-  fetchMoreData = () => {
+
+
+  searchTag = async (tags: string) => {
+    this.setState({ isLoading: true })
+    const getDataByTags: IData[] = (await Axios.get(baseUrl + `searchTag?=${this.state.page}`))?.data
     this.setState({
-      data: [...this.state.data, ...this.generateRandomData()]
+      isLoading: false,
+      data: getDataByTags
     })
   }
 
 
-  updatePlaceHolder(e: any) {
-    console.log(e.target.key)
-
-  }
-
   render(): ReactNode {
     const { classes } = this.props;
-    const { data, isPagination, deviceCols } = this.state;
+    const { data, isLoading, isPagination, deviceCols } = this.state;
+
     return (
 
-      <AppBar position="static" color="default">
+      <AppBar position="sticky" color="default">
         <Toolbar>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -98,33 +117,27 @@ class App extends Component<IProps, IState> {
                 input: classes.inputInput,
               }}
               // key=''
-              onChange={(e) => this.setState({ searchTags: e.target.value })}
+              onChange={(e) => this.searchTag(e.target.value)}
             />
           </div>
         </Toolbar>
 
 
         <div className={classes.root}>
-          <InfiniteScroll
-            initialLoad={false}
-            loadMore={this.fetchMoreData}
-            hasMore={isPagination}
-            loader={(
-              <GridSkeletonLoading className={classes.gridList} cols={deviceCols} />
-            )}
-          >
+          {isLoading ? <GridSkeletonLoading className={classes.gridList} cols={deviceCols} />
+            :
             <GridList cellHeight={400} className={classes.gridList} cols={deviceCols}>
               {data.map((snap) => (
                 <GridListTile key={snap.id}>
-                  <img src={snap.img} alt={snap.title} /> */}
-                  <GridListTileBar
+                  <img src={snap.image} alt={snap.title} /> */}
+                    <GridListTileBar
                     title={snap.title}
                     subtitle={<span>by: ${snap.author} </span>}
                   />
-                </GridListTile>
-              ))}
+                </GridListTile>))}
             </GridList>
-          </InfiniteScroll>
+          }
+
         </div>
       </AppBar>
     );

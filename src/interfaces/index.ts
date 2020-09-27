@@ -1,21 +1,23 @@
 import { createStyles, WithStyles, Theme, fade } from "@material-ui/core/styles";
 
-interface IData {
+export interface IData {
     id: string,
-    img: string,
+    image: string,
     title: string,
     author: string,
 }
 
 export interface IState {
     searchPlaceHolder: string;
-    searchTags: string;
     data: IData[];
     isPagination: boolean;
-    // deviceSize ?: string;
+    page: number,
     deviceCols: number;
+    isLoading: boolean
 
 }
+
+export const baseUrl: string = 'https://aia-flicker-be.herokuapp.com/';
 
 export interface IProps extends WithStyles<typeof styles> { }
 
