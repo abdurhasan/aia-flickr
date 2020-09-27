@@ -91,8 +91,7 @@ class App extends Component<IProps, IState> {
 
 
   searchTag = async (tags: string) => {
-    const urlTag: string = baseUrl + `searchTag?tags=${tags}`
-    alert(urlTag)
+    const urlTag: string = baseUrl + `searchTag?tags=${tags}`    
     this.setState({ isLoading: true })
     const getDataByTags: IData[] = (await Axios.get(urlTag))?.data
     this.setState({
