@@ -10,7 +10,6 @@ export interface IData {
 export interface IState {
     searchPlaceHolder: string;
     data: IData[];
-    isPagination: boolean;
     page: number,
     deviceCols: number;
     isLoading: boolean

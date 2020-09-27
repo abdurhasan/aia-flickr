@@ -18,8 +18,7 @@ class App extends Component<IProps, IState> {
     super(props)
 
     this.state = {
-      searchPlaceHolder: '#Tags .. ',
-      isPagination: true,
+      searchPlaceHolder: '#Tags .. ',      
       deviceCols: 6,
       data: [],
       page: 0,
@@ -103,7 +102,7 @@ class App extends Component<IProps, IState> {
 
   render(): ReactNode {
     const { classes } = this.props;
-    const { data, isLoading, isPagination, deviceCols } = this.state;
+    const { data, isLoading,deviceCols } = this.state;
 
     return (
 
