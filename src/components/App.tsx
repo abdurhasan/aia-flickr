@@ -45,7 +45,8 @@ class App extends Component<IProps, IState> {
 
   async getFeed() {
     this.setState({ isLoading: true })
-    const fetchGetFeed: IData[] = (await Axios.get(baseUrl + `getFeed?=${this.state.page}`))?.data
+    const feedUrl: string = baseUrl + `getFeed?page=${this.state.page}`
+    const fetchGetFeed: IData[] = (await Axios.get(feedUrl))?.data
     const setNewData = [...this.state.data, ...fetchGetFeed]
 
     this.setState({
@@ -82,6 +83,7 @@ class App extends Component<IProps, IState> {
       window.innerHeight + document.documentElement.scrollTop
       === document.documentElement.offsetHeight
     ) {
+      this.setState({ page: this.state.page + 1 })
       this.getFeed()
     }
   }
@@ -89,8 +91,10 @@ class App extends Component<IProps, IState> {
 
 
   searchTag = async (tags: string) => {
+    const urlTag: string = baseUrl + `searchTag?tags=${tags}`
+    alert(urlTag)
     this.setState({ isLoading: true })
-    const getDataByTags: IData[] = (await Axios.get(baseUrl + `searchTag?=${this.state.page}`))?.data
+    const getDataByTags: IData[] = (await Axios.get(urlTag))?.data
     this.setState({
       isLoading: false,
       data: getDataByTags
@@ -124,18 +128,21 @@ class App extends Component<IProps, IState> {
 
 
         <div className={classes.root}>
-          {isLoading ? <GridSkeletonLoading className={classes.gridList} cols={deviceCols} />
-            :
-            <GridList cellHeight={400} className={classes.gridList} cols={deviceCols}>
-              {data.map((snap) => (
-                <GridListTile key={snap.id}>
-                  <img src={snap.image} alt={snap.title} /> */}
+          <GridList cellHeight={400} className={classes.gridList} cols={deviceCols}>
+            {data.map((snap) => (
+              <GridListTile key={snap.id}>
+                <img src={snap.image} alt={snap.title} /> */}
                     <GridListTileBar
-                    title={snap.title}
-                    subtitle={<span>by: ${snap.author} </span>}
-                  />
-                </GridListTile>))}
-            </GridList>
+                  title={snap.title}
+                  subtitle={<span>by: ${snap.author} </span>}
+                />
+              </GridListTile>))}
+          </GridList>
+
+          {isLoading ?
+            <GridSkeletonLoading className={classes.gridList} cols={deviceCols} />
+            :
+            ''
           }
 
         </div>
