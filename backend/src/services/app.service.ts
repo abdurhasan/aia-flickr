@@ -1,26 +1,21 @@
-import { Environtment as Env, HttpClient, parseJson, MS_TENMINUTE } from '../helpers';
+import { Environtment as Env, HttpClient, parseJson } from '../helpers';
 import { toJson as XMLToJson } from 'xml2json';
-import { IFeedData } from '../interfaces'
+import { IFeedData, IState } from '../interfaces'
+
 
 export class AppService {
     public feedData: object;
-    private flickerBaseUrl: string;
+    private flickerBaseUrl: string;    
+
     constructor() {
         this.flickerBaseUrl = Env.get('FLICKER_BASE_URL');
-        this.feedData = {};
-
-        if (Env.getBoolean('RESET_CACHED')) {  // restore cache every 10 minutes
-
-            setInterval(function () {
-                this.feedData = {};
-            }, MS_TENMINUTE)
-        }
-
+        this.feedData = new Object();
     }
 
-    async getFlickerFeed(pageKey: string) {
-        if (this.feedData.hasOwnProperty(pageKey)) {
-            return this.feedData[pageKey]
+    async getFlickerFeed(clientIp: any, pageKey: string): Promise<IFeedData[]> {
+
+        if (this.feedData.hasOwnProperty(clientIp) && this.feedData[clientIp].hasOwnProperty(pageKey)) {
+            return this.feedData[pageKey][clientIp]
         } else {
 
             // 1. fetch data from flickr API
@@ -31,7 +26,8 @@ export class AppService {
 
             // 3. store data for pagination purposed    
             if (readyData.length > 0) {
-                this.feedData[pageKey] = readyData;
+                this.feedData[clientIp] = new Object()
+                this.feedData[clientIp][pageKey] = readyData
             }
 
             return readyData;
@@ -55,9 +51,50 @@ export class AppService {
         return feedParsed;
     }
 
-    async searchTag(tags: string) {
+    async searchTag(tags: string): Promise<IFeedData[]> {
         const tagUrl: string = this.flickerBaseUrl + '?tags=' + tags;
         const getApi = (await HttpClient.get(tagUrl))?.data;
         return this.processFeedApi(getApi)
     }
+
+    getStateData(): IState {
+        const {
+            feedData,
+            flickerBaseUrl
+        } = this;
+
+        return {
+            feedData,
+            flickerBaseUrl
+        }
+
+    }
+    setStateData(updateState: IState): void {
+        for (const key in updateState) {
+            if (this.hasOwnProperty(key)) {
+                this[key] = updateState[key]
+            }
+        }
+
+    }
+
+    // runResetState(resetTime: number): void {
+
+    //     setInterval(function () {
+    //         const repeatTime: number = this._repeat;
+    //         Log('info', ` resetTime is running every ${repeatTime / 1000} second`)
+    //         Log('info', ` resetTimeId == `, getResetTimeId())
+
+    //         // console.log('repeatTime',repeatTime)
+    //         // console.log(repeatTime)
+    //         // if (Number(repeatTime) === this.resetTimeId) {
+    //         //     this.feedData = {};
+    //         // } else {
+    //         //     clearInterval(this)
+    //         // }
+    //     }, resetTime)
+    // }
+
+
+
 }

@@ -6,3 +6,9 @@ export interface IFeedData {
     title: string;
     image: string;
 }
+
+export interface IState {
+    feedData: object;
+    flickerBaseUrl: string;    
+}
+
