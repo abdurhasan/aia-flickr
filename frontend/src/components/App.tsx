@@ -16,41 +16,40 @@ import Axios from 'axios';
 class App extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props)
-
     this.state = {
-      searchPlaceHolder: '#Tags .. ',      
+      searchPlaceHolder: '#Tags .. ',
       deviceCols: 6,
       data: [],
       page: 0,
       isLoading: true
     }
-
-
-
   }
 
   componentDidMount() {
-
-    // const self = this
-    // setInterval(function () {
-    //   console.log(self.state.data)
-    // }, 1000)
-
     window.addEventListener('resize', this.windowHandleResize)
     window.addEventListener('scroll', this.windowHandleScroll)
 
-    this.getFeed()
+    this.getFeed(false)
   }
 
-  async getFeed() {
+  async getFeed(isSearchTag: boolean, tags?: string) {
+    let updateData: IData[] = [];
+
     this.setState({ isLoading: true })
-    const feedUrl: string = baseUrl + `getFeed?page=${this.state.page}`
-    const fetchGetFeed: IData[] = (await Axios.get(feedUrl))?.data
-    const setNewData = [...this.state.data, ...fetchGetFeed]
+    const feedUrl: string = isSearchTag ? `${baseUrl}searchTag?tags=${tags}` : `${baseUrl}getFeed?page=${this.state.page}`
+    const fetchAPIData: IData[] = (await Axios.get(feedUrl))?.data
+
+    if (isSearchTag) {
+      updateData = fetchAPIData;
+    } else {
+      const setNewData = [...this.state.data, ...fetchAPIData]
+      updateData = setNewData.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i)
+
+    }
 
     this.setState({
       isLoading: false,
-      data: setNewData.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i)
+      data: updateData,
     })
   }
 
@@ -83,26 +82,15 @@ class App extends Component<IProps, IState> {
       === document.documentElement.offsetHeight
     ) {
       this.setState({ page: this.state.page + 1 })
-      this.getFeed()
+      this.getFeed(false)
     }
   }
 
 
 
-  searchTag = async (tags: string) => {
-    const urlTag: string = baseUrl + `searchTag?tags=${tags}`    
-    this.setState({ isLoading: true })
-    const getDataByTags: IData[] = (await Axios.get(urlTag))?.data
-    this.setState({
-      isLoading: false,
-      data: getDataByTags
-    })
-  }
-
-
   render(): ReactNode {
     const { classes } = this.props;
-    const { data, isLoading,deviceCols } = this.state;
+    const { data, isLoading, deviceCols } = this.state;
 
     return (
 
@@ -119,7 +107,7 @@ class App extends Component<IProps, IState> {
                 input: classes.inputInput,
               }}
               // key=''
-              onChange={(e) => this.searchTag(e.target.value)}
+              onChange={(e) => this.getFeed(true, e.target.value)}
             />
           </div>
         </Toolbar>
@@ -137,11 +125,7 @@ class App extends Component<IProps, IState> {
               </GridListTile>))}
           </GridList>
 
-          {isLoading ?
-            <GridSkeletonLoading className={classes.gridList} cols={deviceCols} />
-            :
-            ''
-          }
+          {isLoading ? <GridSkeletonLoading className={classes.gridList} cols={deviceCols} /> : ''}
 
         </div>
       </AppBar>

@@ -1,5 +1,5 @@
 import { createStyles, WithStyles, Theme, fade } from "@material-ui/core/styles";
-
+import { isLocalhost } from '../serviceWorker'
 export interface IData {
     id: string,
     image: string,
@@ -16,7 +16,7 @@ export interface IState {
 
 }
 
-export const baseUrl: string = 'https://aia-flicker-be.herokuapp.com/';
+export const baseUrl: string = isLocalhost ? 'http://localhost:8080/' : 'https://aia-flicker-be.herokuapp.com/';
 
 export interface IProps extends WithStyles<typeof styles> { }
 
