@@ -1,0 +1,29 @@
+{
+  "name": "aia-flickr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "client": "cd frontend && npm install && npm start",
+    "server": "cd backend && rimraf .env && cpr .env.example .env && npm install && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abdurhasan/aia-flickr.git"
+  },
+  "keywords": [],
+  "author": "abdurhasan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/abdurhasan/aia-flickr/issues"
+  },
+  "homepage": "https://github.com/abdurhasan/aia-flickr#readme",
+  "devDependencies": {
+    "concurrently": "^5.3.0"
+  },
+  "dependencies": {
+    "cpr": "^3.0.1",
+    "rimraf": "^3.0.2"
+  }
+}
