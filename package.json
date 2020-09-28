@@ -1,0 +1,33 @@
+{
+  "name": "@restyjs/jwt-auth-typeorm-example",
+  "version": "1.0.0",
+  "main": "src/main.ts",
+  "private": "true",
+  "scripts": {
+    "prestart:prod": "rimraf dist && yarn build",
+    "start:prod": "node dist/main.js",
+    "start": "nodemon",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "@types/express": "^4.17.8",
+    "@types/node": "^14.11.2",
+    "@types/xml2json": "^0.11.3",
+    "axios": "^0.20.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "helmet": "^4.1.1",
+    "morgan": "^1.10.0",
+    "node-pretty-log": "^1.1.0",
+    "reflect-metadata": "^0.1.13",
+    "simple-ts-express-decorators": "^1.0.4",
+    "xml2json": "^0.12.0"
+  }
+}
