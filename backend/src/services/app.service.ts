@@ -5,7 +5,7 @@ import { IFeedData, IState } from '../interfaces'
 
 export class AppService {
     public feedData: object;
-    private flickerBaseUrl: string;    
+    private flickerBaseUrl: string;
 
     constructor() {
         this.flickerBaseUrl = Env.get('FLICKER_BASE_URL');
@@ -15,7 +15,7 @@ export class AppService {
     async getFlickerFeed(clientIp: any, pageKey: string): Promise<IFeedData[]> {
 
         if (this.feedData.hasOwnProperty(clientIp) && this.feedData[clientIp].hasOwnProperty(pageKey)) {
-            return this.feedData[pageKey][clientIp]
+            return this.feedData[clientIp][pageKey]
         } else {
 
             // 1. fetch data from flickr API
@@ -26,7 +26,11 @@ export class AppService {
 
             // 3. store data for pagination purposed    
             if (readyData.length > 0) {
-                this.feedData[clientIp] = new Object()
+
+                if (!this.feedData[clientIp]) {
+                    this.feedData[clientIp] = new Object()
+                }
+
                 this.feedData[clientIp][pageKey] = readyData
             }
 
